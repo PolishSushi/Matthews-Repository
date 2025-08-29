@@ -71,7 +71,7 @@ public class testLauncher extends CommandOpMode {
     public void run() {
         super.run();
         launcher.setPowerToLauncher(power);
-        launcher.setPowerToFeeder(power);
+        launcher.setPowerToFeeder(-power);
         telemetry.update();
 }
 }

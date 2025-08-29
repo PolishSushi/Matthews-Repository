@@ -16,6 +16,7 @@ public class Launcher {
         servo = hardwareMap.get(CRServo.class, "servo");
 
         launcherMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
     }
 
     public void setPowerToLauncher(double power) {
@@ -27,6 +28,7 @@ public class Launcher {
         intakeMotor.setPower(power);
     }
     public void setPowerToFeeder(double power) {
+
         servo.setPower(power);
     }
 }
