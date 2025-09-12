@@ -24,7 +24,7 @@ public class MatthewsTeleop extends CommandOpMode {
     private double feederServo = 0;
     private double intakeMotor = 0;
     double leftStickYVal;
-    double leftStickXVal;
+    double rightStickXVal;
     private Timer pathTimer;
 
     @Override
@@ -37,13 +37,14 @@ public class MatthewsTeleop extends CommandOpMode {
         launcher = new Launcher(hardwareMap);
 
 
-        driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+        driver.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(new InstantCommand(() -> {
                     outtakePosition = (outtakePosition +1) % 2;
+                    testVariable = true;
                     pathTimer.resetTimer();
                     //if needed test intake using left and right bumper?
                 }));
-        driver.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+        driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whenPressed(new InstantCommand(() -> {
                     intakePosition = (intakePosition+1) % 2;
 
@@ -82,17 +83,36 @@ public class MatthewsTeleop extends CommandOpMode {
 
         leftStickYVal = gamepad1.left_stick_y;
         leftStickYVal = Range.clip(leftStickYVal, -1, 1);
-        drive.leftMotor.setPower(leftStickYVal);
-        drive.rightMotor.setPower(-leftStickYVal);
 
-        leftStickXVal = gamepad1.right_stick_x;
-        leftStickXVal = Range.clip(leftStickXVal, -1, 1);
+        rightStickXVal = gamepad1.right_stick_x;
+        rightStickXVal = Range.clip(rightStickXVal, -1, 1);
+
+        if (leftStickYVal < -0.1) {
+            drive.driveForward(-leftStickYVal);
+        } else if (leftStickYVal > 0.1) {
+            drive.driveBack(leftStickYVal);
+        } else if (rightStickXVal > 0.1) {
+            drive.rotateRight(rightStickXVal);
+        } else if (rightStickXVal < -0.1) {
+            drive.rotateLeft(-rightStickXVal);
+        } else {
+            drive.stopMotors();
+        }
+//        rightStickXVal = gamepad1.right_stick_x;
+//        leftStickYVal = gamepad1.left_stick_y;
+////left joystick is up and down, and right joy stick is turning
+//        drive.leftMotor.setPower(leftStickYVal);
+//        drive.rightMotor.setPower(-leftStickYVal);
+
+
+//        drive.leftMotor.setPower(-leftStickXVal);
+//        drive.rightMotor.setPower(-leftStickXVal);
 
         //intake automations
         switch (intakePosition) {
             case 0:
                 //set to half power
-                intakeMotor = 0.5;
+                intakeMotor = 0.75;
                 break;
             case 1:
                 intakeMotor = 0;
@@ -103,14 +123,15 @@ public class MatthewsTeleop extends CommandOpMode {
         //outtake automations
         switch (outtakePosition) {
             case 0:
-                launcherMotor = 1;
-                feederServo = 1;
+                if (launcherMotor <1) {
+                    launcherMotor = 1;
+                    feederServo = 1;
+                }
                 break;
             case 1:
                 if (launcherMotor > 0) {
-                    outtakePosition = 0;
                     launcherMotor = 0;
-                    outtakePosition +=1;
+                    outtakePosition = 2;
                 }
                 break;
             case 2:
@@ -129,13 +150,13 @@ public class MatthewsTeleop extends CommandOpMode {
                 break;
         }
 
-        drive.leftMotor.setPower(-leftStickXVal);
-        drive.rightMotor.setPower(-leftStickXVal);
+
 
         telemetry.addData("Battery Voltage", hardwareMap.voltageSensor.iterator().next().getVoltage());
 
         //telemetry.addData("test Variable", testVariable);
         telemetry.addData("Path timer: ", pathTimer.getElapsedTimeSeconds());
+        telemetry.addData("test: ",testVariable);
         telemetry.update();
 }
 }

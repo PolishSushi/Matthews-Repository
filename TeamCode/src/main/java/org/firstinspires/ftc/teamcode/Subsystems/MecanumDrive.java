@@ -28,6 +28,30 @@ public class MecanumDrive extends SubsystemBase {
         leftMotor.setPower(power);
         rightMotor.setPower(-power);
     }
+    public void driveForward(double speed) {
+        leftMotor.setPower(-speed);
+        rightMotor.setPower(speed);
+    }
 
+    public void driveBack(double speed) {
+        leftMotor.setPower(speed);
+        rightMotor.setPower(-speed);
+    }
+
+    public void rotateLeft(double speed) {
+        leftMotor.setPower(speed);
+        rightMotor.setPower(speed);
+
+    }
+
+    public void rotateRight(double speed) {
+        leftMotor.setPower(-speed);
+        rightMotor.setPower(-speed);
+
+    }
+    public void stopMotors(){
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+    }
 
 }
