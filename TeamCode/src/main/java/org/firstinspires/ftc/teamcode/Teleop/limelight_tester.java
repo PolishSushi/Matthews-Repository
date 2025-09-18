@@ -11,18 +11,14 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Subsystems.Launcher;
-import org.firstinspires.ftc.teamcode.Subsystems.MecanumDrive;
-
-import java.util.Locale;
+import org.firstinspires.ftc.teamcode.Subsystems.tankDrive;
 
 @Config
 @TeleOp(name="limelight tester", group=".")
 public class limelight_tester extends CommandOpMode {
 
-    private MecanumDrive drive;
+    private tankDrive drive;
     private Launcher launcher;
     private int outtakePosition = -1;
     private int intakePosition = -1;
@@ -44,7 +40,7 @@ public class limelight_tester extends CommandOpMode {
     public void initialize() {
         driver = new GamepadEx(gamepad1);
 
-        drive = new MecanumDrive();
+        drive = new tankDrive();
         pathTimer = new Timer();
         drive.init(hardwareMap);
         launcher = new Launcher(hardwareMap);

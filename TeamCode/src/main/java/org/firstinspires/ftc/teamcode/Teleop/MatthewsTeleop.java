@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import org.firstinspires.ftc.teamcode.Subsystems.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Subsystems.tankDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Launcher;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandOpMode;
@@ -14,10 +14,11 @@ import com.pedropathing.util.Timer;
 @TeleOp(name="Matthew's Teleop", group=".")
 public class MatthewsTeleop extends CommandOpMode {
 
-    private MecanumDrive drive;
+    private tankDrive drive;
     private Launcher launcher;
     private int outtakePosition = -1;
     private int intakePosition = -1;
+    private int intakeSTOPPosition = -1;
     GamepadEx driver;
     private boolean testVariable = false;
     private double launcherMotor = 0;
@@ -31,7 +32,7 @@ public class MatthewsTeleop extends CommandOpMode {
     public void initialize() {
         driver = new GamepadEx(gamepad1);
 
-        drive = new MecanumDrive();
+        drive = new tankDrive();
         pathTimer = new Timer();
         drive.init(hardwareMap);
         launcher = new Launcher(hardwareMap);
@@ -49,10 +50,10 @@ public class MatthewsTeleop extends CommandOpMode {
                     intakePosition = (intakePosition+1) % 2;
 
                 }));
-//        driver.getGamepadButton(GamepadKeys.Button.X)
-//                .whenPressed(new InstantCommand(() -> {
-//
-//                }));
+        driver.getGamepadButton(GamepadKeys.Button.X)
+                .whenPressed(new InstantCommand(() -> {
+                    intakeSTOPPosition = (intakeSTOPPosition+1) % 2;
+                }));
 //        driver.getGamepadButton(GamepadKeys.Button.A)
 //                .whenPressed(new InstantCommand(() -> {
 //
@@ -99,7 +100,7 @@ public class MatthewsTeleop extends CommandOpMode {
             drive.stopMotors();
         }
 //        rightStickXVal = gamepad1.right_stick_x;
-//        leftStickYVal = gamepad1.left_stick_y;
+//        leftStickYname="Matthew's Teleop", group="."Val = gamepad1.left_stick_y;
 ////left joystick is up and down, and right joy stick is turning
 //        drive.leftMotor.setPower(leftStickYVal);
 //        drive.rightMotor.setPower(-leftStickYVal);
@@ -110,6 +111,17 @@ public class MatthewsTeleop extends CommandOpMode {
 
         //intake automations
         switch (intakePosition) {
+            case 0:
+                //set to half power
+                intakeMotor = -0.75;
+                break;
+            case 1:
+                intakeMotor = 0;
+                break;
+            default:
+                break;
+        }
+        switch (intakeSTOPPosition) {
             case 0:
                 //set to half power
                 intakeMotor = 0.75;
