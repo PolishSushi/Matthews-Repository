@@ -10,15 +10,18 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 import com.pedropathing.util.Timer;
+
+
 @Config
 @TeleOp(name="Matthew's Teleop", group=".")
 public class MatthewsTeleop extends CommandOpMode {
+    //declaring variables
 
     private tankDrive drive;
     private Launcher launcher;
     private int outtakePosition = -1;
     private int intakePosition = -1;
-    private int intakeSTOPPosition = -1;
+    private int intakeREVERSEPosition = -1;
     GamepadEx driver;
     private boolean testVariable = false;
     private double launcherMotor = 0;
@@ -30,6 +33,7 @@ public class MatthewsTeleop extends CommandOpMode {
 
     @Override
     public void initialize() {
+        //initializing all of my classes and setting up automations
         driver = new GamepadEx(gamepad1);
 
         drive = new tankDrive();
@@ -48,29 +52,20 @@ public class MatthewsTeleop extends CommandOpMode {
         driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whenPressed(new InstantCommand(() -> {
                     intakePosition = (intakePosition+1) % 2;
+                    if (intakeREVERSEPosition != -1){
+                        intakeREVERSEPosition = 1;
+                    }
 
                 }));
         driver.getGamepadButton(GamepadKeys.Button.X)
                 .whenPressed(new InstantCommand(() -> {
-                    intakeSTOPPosition = (intakeSTOPPosition+1) % 2;
+                    intakeREVERSEPosition = (intakeREVERSEPosition +1) % 2;
+                    if (intakePosition != -1){
+                        intakePosition = 1;
+                    }
                 }));
-//        driver.getGamepadButton(GamepadKeys.Button.A)
-//                .whenPressed(new InstantCommand(() -> {
-//
-//                }));
-        //yes to whoever is reading this, i still need the commented code below
-//        new Trigger(() -> driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1)
-//                .whileActiveContinuous(new InstantCommand(() -> {
-//                    if (1 >= launcherMotor && launcherMotor >= -1) {
-//                        launcherMotor -= 0.1;
-//                    }
-//                }));
-//        new Trigger(() -> driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1)
-//                .whileActiveContinuous(new InstantCommand(() -> {
-//                    if (1 >= launcherMotor && launcherMotor >= -1) {
-//                        launcherMotor += 0.1;
-//                    }
-//                }));
+
+
         telemetry.addLine("READY!");
         telemetry.update();
     }
@@ -78,6 +73,7 @@ public class MatthewsTeleop extends CommandOpMode {
     @Override
     public void run() {
         super.run();
+        //setting power to all motors
         launcher.setPowerToLauncher(launcherMotor);
         launcher.setPowerToFeeder(-feederServo);
         launcher.setPowerToIntake(intakeMotor);
@@ -88,6 +84,7 @@ public class MatthewsTeleop extends CommandOpMode {
         rightStickXVal = gamepad1.right_stick_x;
         rightStickXVal = Range.clip(rightStickXVal, -1, 1);
 
+        //drive stuff
         if (leftStickYVal < -0.1) {
             drive.driveForward(-leftStickYVal);
         } else if (leftStickYVal > 0.1) {
@@ -99,16 +96,8 @@ public class MatthewsTeleop extends CommandOpMode {
         } else {
             drive.stopMotors();
         }
-//        rightStickXVal = gamepad1.right_stick_x;
-//        leftStickYname="Matthew's Teleop", group="."Val = gamepad1.left_stick_y;
-////left joystick is up and down, and right joy stick is turning
-//        drive.leftMotor.setPower(leftStickYVal);
-//        drive.rightMotor.setPower(-leftStickYVal);
 
-
-//        drive.leftMotor.setPower(-leftStickXVal);
-//        drive.rightMotor.setPower(-leftStickXVal);
-
+        //SWITCH CASES FOR AUTOMATION!!!
         //intake automations
         switch (intakePosition) {
             case 0:
@@ -117,17 +106,20 @@ public class MatthewsTeleop extends CommandOpMode {
                 break;
             case 1:
                 intakeMotor = 0;
+                intakePosition = -1;
                 break;
             default:
                 break;
         }
-        switch (intakeSTOPPosition) {
+        //intake automation to reverse just incase ball gets stuck
+        switch (intakeREVERSEPosition) {
             case 0:
                 //set to half power
-                intakeMotor = 0.75;
+                intakeMotor = 0.3;
                 break;
             case 1:
                 intakeMotor = 0;
+                intakeREVERSEPosition = -1;
                 break;
             default:
                 break;
@@ -166,9 +158,11 @@ public class MatthewsTeleop extends CommandOpMode {
 
         telemetry.addData("Battery Voltage", hardwareMap.voltageSensor.iterator().next().getVoltage());
 
-        //telemetry.addData("test Variable", testVariable);
+
         telemetry.addData("Path timer: ", pathTimer.getElapsedTimeSeconds());
         telemetry.addData("test: ",testVariable);
+        telemetry.addData("Intake: ", intakePosition);
+        telemetry.addData("Intake out: ", intakeREVERSEPosition);
         telemetry.update();
 }
 }
