@@ -31,7 +31,7 @@ public class MatthewsTeleop extends CommandOpMode {
     private double intakeMotor = 0;
     double leftStickYVal;
     double rightStickXVal;
-    double maxSpeed = 1;
+    double maxSpeed = 0.35;
     private Timer pathTimer;
 
     @Override
